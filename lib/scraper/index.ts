@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { extractPrice } from "../utils";
 
 export async function scrapeAmazonProduct(url:string) {
     if(!url) return;
@@ -24,7 +25,13 @@ export async function scrapeAmazonProduct(url:string) {
     try{
         // fetch the product page
         const response = await axios.get(url,options)
-        console.log(response.data)
+        const $ = cheerio.load(response.data)
+        const title = $('#productTitle').text().trim();
+        const currentPrice = extractPrice(
+        $('.priceToPay span.a-price-whole'),
+        $('a.size.base.a-color-price'),
+        $('.a-button-selected .a-color-base'))
+        const originalPrice =extractPrice($('#priceblock_ourpri'))
 
     }catch(error:any){
        throw new Error(`Failed to create/update product: ${error.message}`) 
