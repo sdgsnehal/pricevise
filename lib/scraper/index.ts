@@ -50,15 +50,19 @@ export async function scrapeAmazonProduct(url:string) {
             image:imageUrls[0],
             title,
             currentPrice:Number(currentPrice) || Number(originalPrice),
-            originalPrice:Number(originalPrice),
+            originalPrice:Number(originalPrice) || Number(currentPrice),
             priceHistory:[],
             discountRate:Number(discountRate),
             category:'category',
             reviewsCount:0,
             stars:4.5,
-            isOutOfStock:outOfStock
+            isOutOfStock:outOfStock,
+            description,
+            lowestPrice:Number(currentPrice) || Number(originalPrice),
+            highestPrice:Number(originalPrice) || Number(currentPrice),
+            average:Number(currentPrice)||Number(originalPrice),
         }
-        console.log(data)
+        return data;
 
     }catch(error:any){
        throw new Error(`Failed to create/update product: ${error.message}`) 
