@@ -3,7 +3,9 @@ import { revalidatePath } from "next/cache";
 import Product from "../models/product.model";
 import { connectToDB } from "../mongoose";
 import { scrapeAmazonProduct } from "../scraper";
-import { getHighestPrice, getLowestPrice } from "../utils";
+import { getHighestPrice, getLowestPrice,getAveragePrice } from "../utils";
+import { EmailContent } from "@/types";
+import { html } from "cheerio";
 
 export async function scrapeAndStoreProduct(productUrl: string) {
   if (!productUrl) return;
@@ -73,3 +75,20 @@ export async function getSimilarProducts(productId: string) {
     console.log(error);
   }
 }
+export async function addUserEmailToProduct(productId:string,userEmail:string) {
+  try{
+   const product = await Product.findById(productId);
+   if(!product) return;
+   const userExits = product.user.some((user:User)=>user.email ===userEmail)
+   if(!userExits){
+    product.user.push({email:userEmail});
+    await product.save();
+    const emailContent = generateEmailBody(product,"WELCOME")
+    await sendEmail(emailContent,[userEmail]);
+   }
+  }catch(error){
+  console.log(error)
+  }
+  
+}
+
