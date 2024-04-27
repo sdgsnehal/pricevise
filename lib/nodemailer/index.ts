@@ -1,17 +1,19 @@
+"use server";
 import nodemailer from "nodemailer";
-import { EmailProductInfo, NotificationType } from "@/types";
-export const THRESHOLD_PERCENTAGE = 40;
+import { EmailProductInfo, NotificationType, EmailContent } from "@/types";
+import { error } from "console";
 
-export const Notification = {
+const Notification = {
   WELCOME: "WELCOME",
   CHANGE_OF_STOCK: "CHANGE_OF_STOCK",
   LOWEST_PRICE: "LOWEST_PRICE",
   THRESHOLD_MET: "THRESHOLD_MET",
 };
-export const generateEmailBody = (
+export async function generateEmailBody(
   product: EmailProductInfo,
   type: NotificationType
-) => {
+) {
+  const THRESHOLD_PERCENTAGE = 40;
   const shortendTitle =
     product.title.length > 20
       ? `${product.title.substring(0, 20)}...`
@@ -20,7 +22,7 @@ export const generateEmailBody = (
   let body = "";
   switch (type) {
     case Notification.WELCOME:
-      subject = `Welcome to Price Tracking for ${shortenedTitle}`;
+      subject = `Welcome to Price Tracking for ${shortendTitle}`;
       body = `
         <div>
           <h2>Welcome to PriceWise 🚀</h2>
@@ -38,7 +40,7 @@ export const generateEmailBody = (
       break;
 
     case Notification.CHANGE_OF_STOCK:
-      subject = `${shortenedTitle} is now back in stock!`;
+      subject = `${shortendTitle} is now back in stock!`;
       body = `
         <div>
           <h4>Hey, ${product.title} is now restocked! Grab yours before they run out again!</h4>
@@ -48,7 +50,7 @@ export const generateEmailBody = (
       break;
 
     case Notification.LOWEST_PRICE:
-      subject = `Lowest Price Alert for ${shortenedTitle}`;
+      subject = `Lowest Price Alert for ${shortendTitle}`;
       body = `
         <div>
           <h4>Hey, ${product.title} has reached its lowest price ever!!</h4>
@@ -58,7 +60,7 @@ export const generateEmailBody = (
       break;
 
     case Notification.THRESHOLD_MET:
-      subject = `Discount Alert for ${shortenedTitle}`;
+      subject = `Discount Alert for ${shortendTitle}`;
       body = `
         <div>
           <h4>Hey, ${product.title} is now available at a discount more than ${THRESHOLD_PERCENTAGE}%!</h4>
@@ -72,14 +74,14 @@ export const generateEmailBody = (
   }
 
   return { subject, body };
-};
+}
 const transporter = nodemailer.createTransport({
   pool: true,
   service: "hotmail",
   port: 2525,
   auth: {
-    user: "",
-    pass: "",
+    user: "sdgsnehal@outlook.com",
+    pass: process.env.EMAIL_PASSWORD,
   },
   maxConnections: 1,
 });
@@ -88,9 +90,13 @@ export const sendEmail = async (
   sendTo: string[]
 ) => {
   const mailOptions = {
-    from: "",
+    from: "sdgsnehal@outlook.com",
     to: sendTo,
     html: emailContent.body,
     subject: emailContent.subject,
   };
+  transporter.sendMail(mailOptions, (error: any, info: any) => {
+    if (error) return console.log(error);
+    console.log("Email sent:", info);
+  });
 };

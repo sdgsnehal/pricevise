@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema(
     ],
     lowestPrice: { type: Number },
     highestPrice: { type: Number },
+    averagePrice: { type: Number },
     discountRate: { type: Number },
     description: { type: String },
     category: { type: String },
