@@ -2,6 +2,7 @@ import { connectToDB } from "@/lib/mongoose";
 import Product from "@/lib/models/product.model";
 import { scrapeAmazonProduct } from "@/lib/scraper";
 import {
+  getAveragePrice,
   getEmailNotifType,
   getHighestPrice,
   getLowestPrice,
@@ -28,7 +29,7 @@ export async function GET() {
           priceHistory: updatedPriceHistory,
           lowestPrice: getLowestPrice(updatedPriceHistory),
           highestPrice: getHighestPrice(updatedPriceHistory),
-          //averagePrice: getAveragePrice(updatedPriceHistory),
+          averagePrice: getAveragePrice(updatedPriceHistory),
         };
 
         const updatedProduct = await Product.findOneAndUpdate(
