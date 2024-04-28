@@ -9,6 +9,9 @@ import {
 } from "@/lib/utils";
 import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
 import { NextResponse } from "next/server";
+export const maxDuration = 300;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 export async function GET() {
   try {
     connectToDB();
@@ -34,7 +37,7 @@ export async function GET() {
 
         const updatedProduct = await Product.findOneAndUpdate(
           {
-            url: scrapedProduct.url,
+            url: product.url,
           },
           product
         );
